@@ -1,18 +1,21 @@
 import sys
 import pandas as pd
+import tkinter as tk
+from tkinter import filedialog
+import settings
+from windows.StartWindow import StartWindow
+
+
+if __name__ == "__main__":
+    app = StartWindow()
+    app.mainloop()
+
+
 
 
 # Resources and utilities
 
-def combinar_columnas(df, prefijo, nueva_columna):
-    columnas = [col for col in df.columns if col.startswith(prefijo)]
-    pos = df.columns.get_loc(columnas[0])
-    df[nueva_columna] = df[columnas].bfill(axis=1).ffill(axis=1).iloc[:, 0]
-    df = df.drop(columns=columnas)
-    columna_data = df.pop(nueva_columna)
-    df.insert(pos, nueva_columna, columna_data)
-    return df
-
+"""
 def mix_columns(df, prefix, new_column):
     columns = [col for col in df.columns if col.startswith(prefix)]
     index = df.columns.get_loc(columns[0])
@@ -112,3 +115,5 @@ else:
     db_results_df = mix_columns(db_results_df, 'UBCH:_', 'UBCH')
        
     db_results_df.to_csv('/home/kikemm11/Escritorio/test.csv',index=False)
+    
+"""
