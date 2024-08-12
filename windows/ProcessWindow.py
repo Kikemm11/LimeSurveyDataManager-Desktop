@@ -7,6 +7,7 @@ from tkinter import ttk
 from tkinter import filedialog
 
 import settings
+import json
 
 from windows.EndWindow import EndWindow
 
@@ -119,8 +120,13 @@ class ProcessWindow(tk.Tk):
 
 
     def get_values(self, value, id):
+ 
         if  not isinstance(value, pd.Series):
             value = str(self.survey_dict.get(id).get('A').get(value)) if self.survey_dict.get(id).get('A').get(value) else value
+
+            if isinstance(value, str) and value.startswith('[ {'):
+                value = json.loads(value)[0]["name"]
+
             return value
         else:
             return
