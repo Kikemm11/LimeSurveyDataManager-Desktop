@@ -5,6 +5,8 @@ from tkinter import messagebox
 import settings
 from windows.ProcessWindow import ProcessWindow
 
+import re
+
 class StartWindow(tk.Tk):
     
     def __init__(self):
@@ -23,6 +25,7 @@ class StartWindow(tk.Tk):
         self.survey_dict = {}
         self.lime_survey_file = []
         self.exported_files = []
+        self.survey_id = None
         
         
         welcome_text = tk.Label(self, 
@@ -90,8 +93,9 @@ class StartWindow(tk.Tk):
         if self.lime_survey_file and len(self.exported_files) > 0:
             s_dict = self.survey_dict
             e_files = self.exported_files
+            s_id = self.survey_id
             self.destroy()
-            process_window = ProcessWindow(s_dict, e_files)
+            process_window = ProcessWindow(s_dict, e_files, s_id)
             process_window.mainloop()
         else:
             message = "You've got to select one or more BDResult.csv files"
@@ -111,11 +115,18 @@ class StartWindow(tk.Tk):
             title="Select a File",
             filetypes=[("Text Files", "*.txt")]
         )
+
+        lime_survey_pattern = re.compile(r'limesurvey_survey_[0-9]+')
         
         if file_path: 
-            with open(file_path, 'r') as file:
-                self.lime_survey_file = file.readlines()
-                self._get_survey_dict()
+            if 'limesurvey_survey' in file_path:
+                self.survey_id = ''.join(filter(str.isdigit, file_path.split('_')[2]))
+                with open(file_path, 'r') as file:
+                    self.lime_survey_file = file.readlines()
+                    self._get_survey_dict()
+            else:
+                message = "The file must be an exported .txt file from LimeSurvey!"
+                self.show_error_message(message)
         else:
             message = "You've got to select one limesurvey.txt file"
             self.show_error_message(message)

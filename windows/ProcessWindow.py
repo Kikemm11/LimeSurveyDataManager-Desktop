@@ -5,6 +5,7 @@ import pandas as pd
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
+from tkinter import messagebox
 
 import settings
 import json
@@ -14,7 +15,7 @@ from windows.EndWindow import EndWindow
 
 class ProcessWindow(tk.Tk):
     
-    def __init__(self, _survey_dict, _files):
+    def __init__(self, _survey_dict, _files, _survey_id):
         super().__init__()
         self.title("LimeSurvey Data Manager")
         self.geometry(f"{settings.WINDOW_WIDTH}x{settings.WINDOW_HEIGHT}")
@@ -29,6 +30,7 @@ class ProcessWindow(tk.Tk):
         
         self.survey_dict = _survey_dict
         self.files = _files
+        self.survey_id = _survey_id
         self.column_names_set = set()
         self.DBResults_dataframes = []
         self.output_df = None
@@ -74,7 +76,13 @@ class ProcessWindow(tk.Tk):
             db_results_df = db_results_df.drop(columns=columns_to_drop)
             
             for col in db_results_df.columns:
-                
+
+                if col.split('X')[0] != self.survey_id:
+                    message = 'It looks like one of the BDResults files does not belong to the same survey'
+                    self.show_error_message(message)
+                    self.destroy()
+                    exit()
+                    
                 id = col.split('X')[2]
                 
                 if self.survey_dict.get(id):
@@ -154,6 +162,12 @@ class ProcessWindow(tk.Tk):
         self.destroy()
         end_window = EndWindow(df)
         end_window.mainloop()
+
+    def show_error_message(self, message):
+        messagebox.showerror(
+            title="Error",
+            message=message
+        )
         
         
     
