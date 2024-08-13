@@ -62,10 +62,14 @@ class ProcessWindow(tk.Tk):
         self._manage_data()
         
         self.mainloop()
-        
+
+
+
     def _manage_data(self):
 
         for file in self.files:
+            
+            self.duplicated_names = []
             
             db_results_df = pd.read_csv(file)
             db_results_df = db_results_df.drop(db_results_df.columns[:7], axis=1)
@@ -86,21 +90,25 @@ class ProcessWindow(tk.Tk):
                     
                     new_name = str(self.survey_dict.get(id).get('Q'))    
                     new_name = settings.manage_multimedia_names(new_name)
-                    new_name = settings.manage_duplicates(self.column_names_set, new_name)    
-                    
+                    self.duplicated_names.append(new_name)
+                    new_name = settings.manage_duplicates(self.column_names_set, new_name)
+                        
                     db_results_df = db_results_df.rename(columns={col: new_name})          
                     db_results_df[new_name] = db_results_df[new_name].apply(lambda x: settings.get_values(x, self.survey_dict, id))
                     
+                    
+            self.duplicated_names = set([name for name in self.duplicated_names if self.duplicated_names.count(name) > 1 and (name != 'Foto' and name != 'Ubicación')])
             self.column_names_set = set()
             
             # Delete all the empty columns in the dataframe
-            db_results_df = db_results_df.dropna(axis=1, how='all')
-            # Mix the concurrent columns in on
-            db_results_df = settings.mix_columns(db_results_df, 'Tipo_', 'Tipo')
-            db_results_df = settings.mix_columns(db_results_df, 'Tipología_', 'Tipología')
-            db_results_df = settings.mix_columns(db_results_df, 'Parroquia:_', 'Parroquia')
-            db_results_df = settings.mix_columns(db_results_df, 'UBCH:_', 'UBCH')
             
+            db_results_df = db_results_df.dropna(axis=1, how='all')
+            
+            # Mix the concurrent columns in one
+            
+            for column in self.duplicated_names:
+                db_results_df = settings.mix_columns(db_results_df, column+'_', column)
+        
             self.DBResults_dataframes.append(db_results_df)
             self.file_counter += 1
             
