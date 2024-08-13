@@ -1,14 +1,12 @@
-import sys
 import time
 import pandas as pd
 
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
-from tkinter import messagebox
 
 import settings
-import json
+
 
 from windows.EndWindow import EndWindow
 
@@ -60,11 +58,11 @@ class ProcessWindow(tk.Tk):
             
         self.progress_bar["maximum"] = len(self.files)
         self.progress_bar["value"] = 0
-  
         
         self._manage_data()
         
-
+        self.mainloop()
+        
     def _manage_data(self):
 
         for file in self.files:
@@ -78,8 +76,7 @@ class ProcessWindow(tk.Tk):
             for col in db_results_df.columns:
 
                 if col.split('X')[0] != self.survey_id:
-                    message = 'It looks like one of the BDResults files does not belong to the same survey'
-                    self.show_error_message(message)
+                    settings.show_error_message("It looks like one of the BDResults files does not belong to the same survey")
                     self.destroy()
                     exit()
                     
@@ -88,21 +85,21 @@ class ProcessWindow(tk.Tk):
                 if self.survey_dict.get(id):
                     
                     new_name = str(self.survey_dict.get(id).get('Q'))    
-                    new_name = self.manage_multimedia_names(new_name)
-                    new_name = self.manage_duplicates(new_name)    
+                    new_name = settings.manage_multimedia_names(new_name)
+                    new_name = settings.manage_duplicates(self.column_names_set, new_name)    
                     
                     db_results_df = db_results_df.rename(columns={col: new_name})          
-                    db_results_df[new_name] = db_results_df[new_name].apply(lambda x: self.get_values(x, id))
+                    db_results_df[new_name] = db_results_df[new_name].apply(lambda x: settings.get_values(x, self.survey_dict, id))
                     
             self.column_names_set = set()
             
             # Delete all the empty columns in the dataframe
             db_results_df = db_results_df.dropna(axis=1, how='all')
             # Mix the concurrent columns in on
-            db_results_df = self.mix_columns(db_results_df, 'Tipo_', 'Tipo')
-            db_results_df = self.mix_columns(db_results_df, 'Tipología_', 'Tipología')
-            db_results_df = self.mix_columns(db_results_df, 'Parroquia:_', 'Parroquia')
-            db_results_df = self.mix_columns(db_results_df, 'UBCH:_', 'UBCH')
+            db_results_df = settings.mix_columns(db_results_df, 'Tipo_', 'Tipo')
+            db_results_df = settings.mix_columns(db_results_df, 'Tipología_', 'Tipología')
+            db_results_df = settings.mix_columns(db_results_df, 'Parroquia:_', 'Parroquia')
+            db_results_df = settings.mix_columns(db_results_df, 'UBCH:_', 'UBCH')
             
             self.DBResults_dataframes.append(db_results_df)
             self.file_counter += 1
@@ -113,62 +110,9 @@ class ProcessWindow(tk.Tk):
             
             
         self.output_df = pd.concat(self.DBResults_dataframes, ignore_index=True) if len(self.DBResults_dataframes) > 1 else self.DBResults_dataframes[0] 
-        self.change_window()
+        self._change_window()
     
-    # Resources and utilities
 
-    def mix_columns(self, df, prefix, new_column):
-        columns = [col for col in df.columns if col.startswith(prefix)]
-        index = df.columns.get_loc(columns[0])
-        df[new_column] = df[columns].bfill(axis=1).ffill(axis=1).iloc[:,0]
-        df = df.drop(columns=columns)
-        column_data = df.pop(new_column)
-        df.insert(index,new_column,column_data)
-        return df
-
-
-    def get_values(self, value, id):
- 
-        if  not isinstance(value, pd.Series):
-            value = str(self.survey_dict.get(id).get('A').get(value)) if self.survey_dict.get(id).get('A').get(value) else value
-
-            if isinstance(value, str) and value.startswith('[ {'):
-                value = json.loads(value)[0]["name"]
-
-            return value
-        else:
-            return
-        
-    def manage_duplicates(self, column_name):
-        
-        if column_name in self.column_names_set:
-            i = 1
-            column_name = f"{column_name}_{i}"
-            while column_name in self.column_names_set:
-                i += 1
-                column_name = f"{column_name.split('_')[0]}_{i}"
-        self.column_names_set.add(column_name)
-        
-        return column_name
-
-    def manage_multimedia_names(self, column_name):
-        column_name = 'Foto' if 'Foto' in column_name else column_name
-        column_name = 'Ubicación' if 'ubicación' in column_name else column_name
-        return column_name
-    
-    def change_window(self): 
-        df = self.output_df
+    def _change_window(self): 
         time.sleep(1)
-        self.destroy()
-        end_window = EndWindow(df)
-        end_window.mainloop()
-
-    def show_error_message(self, message):
-        messagebox.showerror(
-            title="Error",
-            message=message
-        )
-        
-        
-    
-    
+        self.destroy()    

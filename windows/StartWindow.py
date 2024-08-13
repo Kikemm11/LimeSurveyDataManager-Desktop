@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import filedialog
-from tkinter import messagebox
 
 import settings
 from windows.ProcessWindow import ProcessWindow
@@ -77,7 +76,7 @@ class StartWindow(tk.Tk):
         
         process_button = tk.Button(self, 
                         text="Process", 
-                        command=self.change_window,
+                        command=self._change_window,
                         font=(settings.FONT, 14),
                         bg=settings.BACKGROUND_BUTTON_COLOR,  
                         fg='black',    
@@ -86,20 +85,15 @@ class StartWindow(tk.Tk):
                     )
 
         process_button.grid(row=5, column=1, sticky="nsew", padx=250, pady=20)
-    
-    
-    def change_window(self): 
         
+        self.mainloop()
+    
+    
+    def _change_window(self): 
         if self.lime_survey_file and len(self.exported_files) > 0:
-            s_dict = self.survey_dict
-            e_files = self.exported_files
-            s_id = self.survey_id
             self.destroy()
-            process_window = ProcessWindow(s_dict, e_files, s_id)
-            process_window.mainloop()
         else:
-            message = "You've got to select one or more BDResult.csv files"
-            self.show_error_message(message)
+            settings.show_error_message("You've got to select one or more BDResult.csv files")
                 
     def _get_survey_dict(self):
         
@@ -124,12 +118,10 @@ class StartWindow(tk.Tk):
                 with open(file_path, 'r') as file:
                     self.lime_survey_file = file.readlines()
                     self._get_survey_dict()
-            else:
-                message = "The file must be an exported .txt file from LimeSurvey!"
-                self.show_error_message(message)
+            else: 
+                settings.show_error_message("The file must be an exported .txt file from LimeSurvey!")
         else:
-            message = "You've got to select one limesurvey.txt file"
-            self.show_error_message(message)
+            settings.show_error_message("You've got to select one limesurvey.txt file")
      
         
     def select_exported_files(self):
@@ -139,9 +131,3 @@ class StartWindow(tk.Tk):
             filetypes=[("CSV Files", "*.csv")]
         )
         
-        
-    def show_error_message(self, message):
-        messagebox.showerror(
-            title="Error",
-            message=message
-        )
