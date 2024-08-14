@@ -120,9 +120,7 @@ class StartWindow(tk.Tk):
                                 if  not (code[0] == self.survey_id and self.survey_dict.get(code[1]) and self.survey_dict.get(code[2])):
                                     settings.show_error_message("Ups, one of your DBResults file does not belong to the same survey you're trying to process")
                                     exit()
-                        break
-                    
-                    
+                        break        
             return True
         
         else:

@@ -3,12 +3,8 @@ import pandas as pd
 
 import tkinter as tk
 from tkinter import ttk
-from tkinter import filedialog
 
 import settings
-
-
-from windows.EndWindow import EndWindow
 
 
 class ProcessWindow(tk.Tk):
@@ -29,7 +25,6 @@ class ProcessWindow(tk.Tk):
         self.survey_dict = _survey_dict
         self.files = _files
         self.survey_id = _survey_id
-        self.column_names_set = set()
         self.DBResults_dataframes = []
         self.output_df = None
         self.file_counter = 0
@@ -70,6 +65,7 @@ class ProcessWindow(tk.Tk):
         for file in self.files:
             
             self.duplicated_names = []
+            self.column_names_set = set()
             
             db_results_df = pd.read_csv(file)
             db_results_df = db_results_df.drop(db_results_df.columns[:7], axis=1)
@@ -79,26 +75,18 @@ class ProcessWindow(tk.Tk):
             
             for col in db_results_df.columns:
 
-                if col.split('X')[0] != self.survey_id:
-                    settings.show_error_message("It looks like one of the BDResults files does not belong to the same survey")
-                    self.destroy()
-                    exit()
-                    
                 id = col.split('X')[2]
-                
-                if self.survey_dict.get(id):
+            
+                new_name = str(self.survey_dict.get(id).get('Q'))    
+                new_name = settings.manage_multimedia_names(new_name)
+                self.duplicated_names.append(new_name)
+                new_name = settings.manage_duplicates(self.column_names_set, new_name)
                     
-                    new_name = str(self.survey_dict.get(id).get('Q'))    
-                    new_name = settings.manage_multimedia_names(new_name)
-                    self.duplicated_names.append(new_name)
-                    new_name = settings.manage_duplicates(self.column_names_set, new_name)
-                        
-                    db_results_df = db_results_df.rename(columns={col: new_name})          
-                    db_results_df[new_name] = db_results_df[new_name].apply(lambda x: settings.get_values(x, self.survey_dict, id))
+                db_results_df = db_results_df.rename(columns={col: new_name})          
+                db_results_df[new_name] = db_results_df[new_name].apply(lambda x: settings.get_values(x, self.survey_dict, id))
                     
                     
             self.duplicated_names = set([name for name in self.duplicated_names if self.duplicated_names.count(name) > 1 and (name != 'Foto' and name != 'Ubicación')])
-            self.column_names_set = set()
             
             # Delete all the empty columns in the dataframe
             
@@ -120,6 +108,7 @@ class ProcessWindow(tk.Tk):
         self.output_df = pd.concat(self.DBResults_dataframes, ignore_index=True) if len(self.DBResults_dataframes) > 1 else self.DBResults_dataframes[0] 
         self._change_window()
     
+
 
     def _change_window(self): 
         time.sleep(1)
