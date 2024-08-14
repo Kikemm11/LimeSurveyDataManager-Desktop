@@ -1,11 +1,12 @@
 import os
 
-import pandas as pd
-
 import tkinter as tk
 from tkinter import filedialog
 
+from jinja2 import Template
+
 import settings
+from views import output_html
 
 
 class EndWindow(tk.Tk):
@@ -71,6 +72,7 @@ class EndWindow(tk.Tk):
         
         if file_path:
             self.output_df.to_csv(file_path,index=False)
+            self.generate_html(file_path)
             self.destroy()
             
             
@@ -79,3 +81,17 @@ class EndWindow(tk.Tk):
         parent_dir = os.path.dirname(current_dir)  
         image_path = os.path.join(parent_dir, 'assets', img_name)
         return image_path
+    
+
+    def generate_html(self, file_path):
+        data = {
+                    "output_df": self.output_df,
+                    "column_names": self.output_df.columns,
+                    "df_lenght": len(self.output_df)
+
+                    }   
+            
+        template = Template(output_html.html_template)
+        html_content = template.render(data)
+        with open(file_path.replace('.csv', '.html'), "w") as file:
+            file.write(html_content)
