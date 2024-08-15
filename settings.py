@@ -29,7 +29,6 @@ def mix_columns(df, prefix, new_column):
     
     
 def get_values(value, survey_dict, id):
- 
         if  not isinstance(value, pd.Series):
             value = str(survey_dict.get(id).get('A').get(value)) if survey_dict.get(id).get('A').get(value) else value
 
@@ -65,5 +64,3 @@ def show_error_message(message):
             title="Error",
             message=message
         )
-        
-
