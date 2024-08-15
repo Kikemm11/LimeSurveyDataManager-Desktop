@@ -1,5 +1,3 @@
-
-
 html_template = """
 <!DOCTYPE html>
 <html>

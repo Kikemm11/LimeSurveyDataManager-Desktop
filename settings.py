@@ -50,5 +50,3 @@ def show_error_message(message):
             title="Error",
             message=message
         )
-        
-

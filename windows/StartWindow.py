@@ -16,11 +16,15 @@ class StartWindow(tk.Tk):
         self.configure(bg=settings.BACKGROUND_COLOR)
         self.resizable(False, False)
         
+        
+        # Window grid configurations
+        
         for i in range(7):  
             self.grid_rowconfigure(i, weight=1)
 
         for j in range(3):  
             self.grid_columnconfigure(j, weight=1)
+            
         
         self.survey_dict = {}
         self.selected_directory = None
@@ -29,50 +33,20 @@ class StartWindow(tk.Tk):
         self.survey_id = None
         
         
-        welcome_text = tk.Label(self, 
-                        text="Welcome to LimeSurvey Data Manager!",
-                        background=settings.BACKGROUND_COLOR,
-                        wraplength=900,
-                        font=(settings.FONT, 20, "bold"),
-                        )
+        # Window Labels
         
+        welcome_text = tk.Label(self, text="Welcome to LimeSurvey Data Manager!", background=settings.BACKGROUND_COLOR, wraplength=900, font=(settings.FONT, 20, "bold"),)
         welcome_text.grid(row=0, column=1, sticky="nsew") 
-        
-        
-        main_text = tk.Label(self, 
-                        text="Here you can upload your LimeSurvey exported survey\nand all the responses provided by OfflineSurveysApp to manage them and obtained a finest .csv",
-                        background=settings.BACKGROUND_COLOR,
-                        width=500,
-                        wraplength=600,
-                        font=(settings.FONT, 14)
-                        )
-        
+         
+        main_text = tk.Label(self, text="Here you can upload your LimeSurvey exported survey\nand all the responses provided by OfflineSurveysApp to manage them and obtained a finest .csv", background=settings.BACKGROUND_COLOR, width=500, wraplength=600, font=(settings.FONT, 14))
         main_text.grid(row=1, column=1, sticky="nsew")
         
+        # Window buttons
         
-        directory_button = tk.Button(self, 
-                        text="Select Directory", 
-                        command=self.select_directory,
-                        font=(settings.FONT, 14),
-                        bg=settings.BACKGROUND_BUTTON_COLOR,  
-                        fg='black',    
-                        padx=10,       
-                        pady=5
-                    )
-        
+        directory_button = tk.Button(self, text="Select Directory", command=self.select_directory, font=(settings.FONT, 14), bg=settings.BACKGROUND_BUTTON_COLOR, fg='black', padx=10, pady=5)
         directory_button.grid(row=3, column=1, sticky="nsew", padx=170, pady=20)
 
-
-        process_button = tk.Button(self, 
-                        text="Process", 
-                        command=self._change_window,
-                        font=(settings.FONT, 14),
-                        bg=settings.BACKGROUND_BUTTON_COLOR,  
-                        fg='black',    
-                        padx=10,       
-                        pady=5
-                    )
-
+        process_button = tk.Button(self, text="Process", command=self._change_window, font=(settings.FONT, 14), bg=settings.BACKGROUND_BUTTON_COLOR, fg='black', padx=10, pady=5)
         process_button.grid(row=6, column=1, sticky="nsew", padx=250, pady=20)
         
         self.mainloop()
@@ -81,12 +55,17 @@ class StartWindow(tk.Tk):
 
     def select_directory(self):
         self.selected_directory = filedialog.askdirectory(title="Select a Directory")
+        
         if self.selected_directory:
+            
+            # Storage all .txt and .csv files in list for further usage along with the survey id 
+            
             self.txt_files = [os.path.join(self.selected_directory, file) for file in os.listdir(self.selected_directory) if os.path.join(self.selected_directory, file).endswith('.txt')]
             self.survey_id = [''.join(filter(str.isdigit, file.split('_')[2])) for file in os.listdir(self.selected_directory) if os.path.join(self.selected_directory, file).endswith('.txt')]
             self.csv_files = [os.path.join(self.selected_directory, file) for file in os.listdir(self.selected_directory) if os.path.join(self.selected_directory,file).endswith('.csv')]
     
-    def validate_survey(self):
+    
+    def _validate_survey(self):
         if self.txt_files:
             if len(self.txt_files) > 1:
                 settings.show_error_message("It looks like you've got more than one limesurvey.txt file inside your directory")
@@ -105,10 +84,12 @@ class StartWindow(tk.Tk):
             exit()
 
 
-    def validate_csv_files(self):
+    # Check if every DBResults file belongs to the selected limesurvey.txt
+
+    def _validate_csv_files(self):
 
         if len(self.csv_files) > 0:
-
+        
             for file in self.csv_files:
 
                 with open(file, newline='') as csvfile:
@@ -127,9 +108,8 @@ class StartWindow(tk.Tk):
             settings.show_error_message("Ups, you've got no DBResults files in this directory")
             exit() 
             
-    def _get_img_dict(self):
-        pass
-        
+            
+    # Parse all the limesurvey.txt to get all the related information into a dict        
                 
     def _get_survey_dict(self, limesurvey_file):
         
@@ -141,7 +121,6 @@ class StartWindow(tk.Tk):
                 self.survey_dict[elements[0]]['A'][elements[4]] = elements[6].rstrip()
     
 
-
     def _change_window(self): 
-        if self.validate_survey() and self.validate_csv_files():
+        if self._validate_survey() and self._validate_csv_files():
             self.destroy()

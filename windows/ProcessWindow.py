@@ -18,11 +18,15 @@ class ProcessWindow(tk.Tk):
         self.configure(bg=settings.BACKGROUND_COLOR)
         self.resizable(False, False)
         
+        
+        # Window grid configurations
+        
         for i in range(4):  
             self.grid_rowconfigure(i, weight=1)
 
         for j in range(3): 
             self.grid_columnconfigure(j, weight=1)
+            
         
         self.survey_dict = _survey_dict
         self.files = _files
@@ -33,36 +37,28 @@ class ProcessWindow(tk.Tk):
         self.output_df = None
         self.file_counter = 0
         
-        label = tk.Label(self, 
-                        text="Processing Data",
-                        background=settings.BACKGROUND_COLOR,
-                        wraplength=300,
-                        font=(settings.FONT, 20, "bold"),
-                        )
         
+        # Window Labels
+        
+        label = tk.Label(self, text="Processing Data", background=settings.BACKGROUND_COLOR, wraplength=300, font=(settings.FONT, 20, "bold")) 
         label.grid(row=0, column=1, sticky="nsew")
         
-        self.progress_label = tk.Label(self,
-                                text=f"{self.file_counter} / {len(self.files)} files",
-                                background=settings.BACKGROUND_COLOR,
-                                wraplength=300,
-                                font=(settings.FONT, 16),
-                                  )
-        
+        self.progress_label = tk.Label(self, text=f"{self.file_counter} / {len(self.files)} files", background=settings.BACKGROUND_COLOR, wraplength=300, font=(settings.FONT, 16))
         self.progress_label.grid(row=1, column=1, pady=10)
-        
     
         self.progress_bar = ttk.Progressbar(self, orient="horizontal", mode="determinate")
         self.progress_bar.grid(row=2, column=1, sticky="nsew", padx=20, pady=70)
             
+            
         self.progress_bar["maximum"] = len(self.files)
         self.progress_bar["value"] = 0
         
-        self._manage_data()
         
+        self._manage_data()
         self.mainloop()
 
 
+    # Process and sanitize all the data inside each DBResults file to get a clean output file 
 
     def _manage_data(self):
 
@@ -80,13 +76,18 @@ class ProcessWindow(tk.Tk):
             for col in db_results_df.columns:
 
                 id = col.split('X')[2]
+                
+                # Get the correct column names
             
                 new_name = str(self.survey_dict.get(id).get('Q'))    
                 new_name = settings.manage_multimedia_names(new_name)
                 self.duplicated_names.append(new_name)
                 new_name = settings.manage_duplicates(self.column_names_set, new_name)
-                    
-                db_results_df = db_results_df.rename(columns={col: new_name})          
+    
+                db_results_df = db_results_df.rename(columns={col: new_name}) 
+                
+                # Get the correct values for each row of the current column
+                         
                 db_results_df[new_name] = db_results_df[new_name].apply(lambda x: self._get_values(x, id))
                     
                     
@@ -101,8 +102,11 @@ class ProcessWindow(tk.Tk):
             for column in self.duplicated_names:
                 db_results_df = settings.mix_columns(db_results_df, column+'_', column)
         
+        
             self.DBResults_dataframes.append(db_results_df)
             self.file_counter += 1
+            
+            # Update the progress bar 
             
             self.progress_bar["value"] = self.file_counter
             self.progress_label.config(text=f"{self.file_counter} / {len(self.files)} files")  
@@ -113,9 +117,12 @@ class ProcessWindow(tk.Tk):
         self._change_window()
         
         
+    # Use the survey_dict to get all the correct values per each DBResults file    
+        
     def _get_values(self, value, id):
  
         if  not isinstance(value, pd.Series):
+            
             value = str(self.survey_dict.get(id).get('A').get(value)) if self.survey_dict.get(id).get('A').get(value) else value
 
             if isinstance(value, str) and value.startswith('[ {'):
@@ -125,6 +132,7 @@ class ProcessWindow(tk.Tk):
             return value
         else:
             return
+    
     
     def _change_window(self): 
         time.sleep(1)

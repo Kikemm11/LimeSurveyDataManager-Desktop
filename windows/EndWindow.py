@@ -11,66 +11,50 @@ from views import output_html
 
 class EndWindow(tk.Tk):
     
-    def __init__(self, _output_df, _selected_directory, _img_dict):
+    def __init__(self, _output_df, _img_dict):
         super().__init__()
         self.title("LimeSurvey Data Manager")
         self.geometry(f"{settings.WINDOW_WIDTH}x{settings.WINDOW_HEIGHT}")
         self.configure(bg=settings.BACKGROUND_COLOR)
         self.resizable(False, False)
         
+        
+        # Window grid configurations
+        
         for i in range(5):  
             self.grid_rowconfigure(i, weight=1)
 
         for j in range(3):  
             self.grid_columnconfigure(j, weight=1)
+            
 
         self.output_df = _output_df
-        self.selected_directory = _selected_directory
         self.img_dict = _img_dict
+        
+        
+        # Window Labels
 
-        label = tk.Label(self, 
-                        text="CSV file ready",
-                        background=settings.BACKGROUND_COLOR,
-                        wraplength=300,
-                        font=(settings.FONT, 20, "bold"),
-                        height=3
-                        )
-
+        label = tk.Label(self, text="CSV file ready", background=settings.BACKGROUND_COLOR, wraplength=300, font=(settings.FONT, 20, "bold"), height=3)
         label.grid(row=1, column=1, sticky="nsew")
-
-
+        
         img_path = self.get_image_path('csv_file.png')
-
         self.photo = tk.PhotoImage(file=img_path)
-        self.csv_img = tk.Label(self,
-                                image=self.photo,
-                                background=settings.BACKGROUND_COLOR
-                                )
-
+        
+        self.csv_img = tk.Label(self, image=self.photo, background=settings.BACKGROUND_COLOR)
         self.csv_img.grid(row=2, column=1, sticky="nsew", pady=20)
 
 
-        save_button = tk.Button(self, 
-                            text="Save", 
-                            command=self._save_file,
-                            font=(settings.FONT, 14),
-                            bg=settings.BACKGROUND_BUTTON_COLOR,  
-                            fg='black',    
-                            padx=10,       
-                            pady=5
-                        )
+        # Window buttons
 
+        save_button = tk.Button(self, text="Save", command=self._save_file, font=(settings.FONT, 14), bg=settings.BACKGROUND_BUTTON_COLOR, fg='black', padx=10, pady=5)
         save_button.grid(row=3, column=1, sticky="nsew", pady=20, padx=70)
+        
         
         self.mainloop()
 
          
     def _save_file(self):
-        file_path = filedialog.asksaveasfilename(
-            title="Save File",
-            defaultextension=".csv",  
-            filetypes=[(".csv Files", "*.csv")]  
-        )
+        file_path = filedialog.asksaveasfilename(title="Save File", defaultextension=".csv", filetypes=[(".csv Files", "*.csv")])
         
         if file_path:
             self.output_df.to_csv(file_path,index=False)
@@ -86,13 +70,13 @@ class EndWindow(tk.Tk):
     
 
     def generate_html(self, file_path):
+        
         data = {
-                    'output_df': self.output_df,
-                    'column_names': self.output_df.columns,
-                    'df_lenght': len(self.output_df),
-                    'selected_directory': self.selected_directory,
-                    'img_dict': self.img_dict
-                    }   
+                'output_df': self.output_df,
+                'column_names': self.output_df.columns,
+                'df_lenght': len(self.output_df),
+                'img_dict': self.img_dict
+                }   
             
         template = Template(output_html.html_template)
         html_content = template.render(data)
