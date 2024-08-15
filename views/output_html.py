@@ -25,7 +25,15 @@ html_template = """
                     {% for i in range(df_lenght) %}
                         <tr>
                             {% for col in column_names %}    
-                                <td>{{ output_df.iloc[i][col] }}</td>
+                                {% if 'Foto' not in col %}
+                                    <td>{{ output_df.iloc[i][col] }}</td>
+                                {% else %}
+                                    {% if img_dict.get(output_df.iloc[i][col]) %}
+                                        <td><img src="{{ img_dict.get(output_df.iloc[i][col]) }}"  width="100" height="100"></td>
+                                    {% else %}
+                                        <td>{{ output_df.iloc[i][col] }}</td>
+                                    {% endif %}
+                                {% endif %}
                             {% endfor %}
                         </tr>
                     {% endfor %}

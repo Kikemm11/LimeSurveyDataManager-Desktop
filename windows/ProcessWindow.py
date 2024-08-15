@@ -1,4 +1,6 @@
+import os
 import time
+import json
 import pandas as pd
 
 import tkinter as tk
@@ -9,7 +11,7 @@ import settings
 
 class ProcessWindow(tk.Tk):
     
-    def __init__(self, _survey_dict, _files, _survey_id):
+    def __init__(self, _survey_dict, _files, _survey_id, _selected_directory):
         super().__init__()
         self.title("LimeSurvey Data Manager")
         self.geometry(f"{settings.WINDOW_WIDTH}x{settings.WINDOW_HEIGHT}")
@@ -25,6 +27,8 @@ class ProcessWindow(tk.Tk):
         self.survey_dict = _survey_dict
         self.files = _files
         self.survey_id = _survey_id
+        self.selected_directory = _selected_directory
+        self.img_dict = {}
         self.DBResults_dataframes = []
         self.output_df = None
         self.file_counter = 0
@@ -83,7 +87,7 @@ class ProcessWindow(tk.Tk):
                 new_name = settings.manage_duplicates(self.column_names_set, new_name)
                     
                 db_results_df = db_results_df.rename(columns={col: new_name})          
-                db_results_df[new_name] = db_results_df[new_name].apply(lambda x: settings.get_values(x, self.survey_dict, id))
+                db_results_df[new_name] = db_results_df[new_name].apply(lambda x: self._get_values(x, id))
                     
                     
             self.duplicated_names = set([name for name in self.duplicated_names if self.duplicated_names.count(name) > 1 and (name != 'Foto' and name != 'Ubicación')])
@@ -107,9 +111,21 @@ class ProcessWindow(tk.Tk):
             
         self.output_df = pd.concat(self.DBResults_dataframes, ignore_index=True) if len(self.DBResults_dataframes) > 1 else self.DBResults_dataframes[0] 
         self._change_window()
+        
+        
+    def _get_values(self, value, id):
+ 
+        if  not isinstance(value, pd.Series):
+            value = str(self.survey_dict.get(id).get('A').get(value)) if self.survey_dict.get(id).get('A').get(value) else value
+
+            if isinstance(value, str) and value.startswith('[ {'):
+                value = json.loads(value)[0]["name"]
+                self.img_dict[value] = os.path.join(self.selected_directory, value)
+
+            return value
+        else:
+            return
     
-
-
     def _change_window(self): 
         time.sleep(1)
         self.destroy()    

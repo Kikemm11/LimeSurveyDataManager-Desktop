@@ -23,6 +23,7 @@ class StartWindow(tk.Tk):
             self.grid_columnconfigure(j, weight=1)
         
         self.survey_dict = {}
+        self.selected_directory = None
         self.txt_files = None
         self.csv_files = None
         self.survey_id = None
@@ -79,12 +80,11 @@ class StartWindow(tk.Tk):
 
 
     def select_directory(self):
-        selected_directory = filedialog.askdirectory(title="Select a Directory")
-        if selected_directory:
-            self.txt_files = [os.path.join(selected_directory, file) for file in os.listdir(selected_directory) if os.path.join(selected_directory, file).endswith('.txt')]
-            self.survey_id = [''.join(filter(str.isdigit, file.split('_')[2])) for file in os.listdir(selected_directory) if os.path.join(selected_directory, file).endswith('.txt')]
-            self.csv_files = [os.path.join(selected_directory, file) for file in os.listdir(selected_directory) if os.path.join(selected_directory,file).endswith('.csv')]
-            
+        self.selected_directory = filedialog.askdirectory(title="Select a Directory")
+        if self.selected_directory:
+            self.txt_files = [os.path.join(self.selected_directory, file) for file in os.listdir(self.selected_directory) if os.path.join(self.selected_directory, file).endswith('.txt')]
+            self.survey_id = [''.join(filter(str.isdigit, file.split('_')[2])) for file in os.listdir(self.selected_directory) if os.path.join(self.selected_directory, file).endswith('.txt')]
+            self.csv_files = [os.path.join(self.selected_directory, file) for file in os.listdir(self.selected_directory) if os.path.join(self.selected_directory,file).endswith('.csv')]
     
     def validate_survey(self):
         if self.txt_files:
@@ -126,6 +126,9 @@ class StartWindow(tk.Tk):
         else:
             settings.show_error_message("Ups, you've got no DBResults files in this directory")
             exit() 
+            
+    def _get_img_dict(self):
+        pass
         
                 
     def _get_survey_dict(self, limesurvey_file):

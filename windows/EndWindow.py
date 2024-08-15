@@ -11,7 +11,7 @@ from views import output_html
 
 class EndWindow(tk.Tk):
     
-    def __init__(self, _output_df):
+    def __init__(self, _output_df, _selected_directory, _img_dict):
         super().__init__()
         self.title("LimeSurvey Data Manager")
         self.geometry(f"{settings.WINDOW_WIDTH}x{settings.WINDOW_HEIGHT}")
@@ -25,6 +25,8 @@ class EndWindow(tk.Tk):
             self.grid_columnconfigure(j, weight=1)
 
         self.output_df = _output_df
+        self.selected_directory = _selected_directory
+        self.img_dict = _img_dict
 
         label = tk.Label(self, 
                         text="CSV file ready",
@@ -85,10 +87,11 @@ class EndWindow(tk.Tk):
 
     def generate_html(self, file_path):
         data = {
-                    "output_df": self.output_df,
-                    "column_names": self.output_df.columns,
-                    "df_lenght": len(self.output_df)
-
+                    'output_df': self.output_df,
+                    'column_names': self.output_df.columns,
+                    'df_lenght': len(self.output_df),
+                    'selected_directory': self.selected_directory,
+                    'img_dict': self.img_dict
                     }   
             
         template = Template(output_html.html_template)
