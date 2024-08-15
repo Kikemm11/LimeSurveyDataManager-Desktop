@@ -99,7 +99,7 @@ class StartWindow(tk.Tk):
         
             for file in self.csv_files:
 
-                with open(file, newline='') as csvfile:
+                with open(file, newline='', encoding='UTF-8') as csvfile:
                     reader = csv.reader(csvfile)
                     for row in reader:
                         for i in range(7, len(row)):

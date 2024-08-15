@@ -56,12 +56,16 @@ class ProcessWindow(tk.Tk):
         self.progress_bar = ttk.Progressbar(self, orient="horizontal", mode="determinate")
         self.progress_bar.grid(row=2, column=1, sticky="nsew", padx=20, pady=70)
             
-            
         self.progress_bar["maximum"] = len(self.files)
         self.progress_bar["value"] = 0
         
         
-        self._manage_data()
+        # Window buttons 
+ 
+        start_button = tk.Button(self, text="Start", command=self._manage_data, font=(settings.FONT, 14), bg=settings.BACKGROUND_BUTTON_COLOR, fg='black', padx=10, pady=5) 
+        start_button.grid(row=3, column=1, sticky="nsew", pady=20, padx=70)
+        
+        
         self.mainloop()
 
 
