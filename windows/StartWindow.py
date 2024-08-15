@@ -1,3 +1,10 @@
+"""
+This file contains all the logic related to the Start Window of the application
+
+Author: Ivan Maldonado (Kikemaldonado11@gmail.com)
+Developed at: August, 2024
+"""
+
 import os
 import csv
 

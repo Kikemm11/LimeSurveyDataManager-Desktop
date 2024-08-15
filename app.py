@@ -1,3 +1,10 @@
+"""
+This file contains the main calls to the windows involved in the application
+
+Author: Ivan Maldonado (Kikemaldonado11@gmail.com)
+Developed at: August, 2024
+"""
+
 from windows.StartWindow import StartWindow
 from windows.ProcessWindow import ProcessWindow
 from windows.EndWindow import EndWindow
