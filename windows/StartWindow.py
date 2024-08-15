@@ -56,6 +56,7 @@ class StartWindow(tk.Tk):
         process_button = tk.Button(self, text="Process", command=self._change_window, font=(settings.FONT, 14), bg=settings.BACKGROUND_BUTTON_COLOR, fg='black', padx=10, pady=5)
         process_button.grid(row=6, column=1, sticky="nsew", padx=250, pady=20)
         
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.mainloop()
 
 
@@ -131,3 +132,6 @@ class StartWindow(tk.Tk):
     def _change_window(self): 
         if self._validate_survey() and self._validate_csv_files():
             self.destroy()
+            
+    def on_closing(self):
+        exit()

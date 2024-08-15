@@ -57,6 +57,7 @@ class EndWindow(tk.Tk):
         save_button.grid(row=3, column=1, sticky="nsew", pady=20, padx=70)
         
         
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.mainloop()
 
          
@@ -89,3 +90,6 @@ class EndWindow(tk.Tk):
         html_content = template.render(data)
         with open(file_path.replace('.csv', '.html'), "w") as file:
             file.write(html_content)
+            
+    def on_closing(self):
+        exit()
