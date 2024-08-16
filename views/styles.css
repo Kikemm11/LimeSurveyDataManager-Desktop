@@ -1,0 +1,16 @@
+table {
+    table-layout: auto; 
+    width: 100%; 
+}
+th, td {
+    text-align: center; 
+    white-space: nowrap; 
+    padding: 8px; 
+}
+th {
+    white-space: nowrap; 
+    font-weight: bold; 
+}
+td {
+    white-space: normal; 
+}

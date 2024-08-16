@@ -5,33 +5,15 @@ html_template = """
     <title>Survey Responses</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
     
-    <style>
-        table {
-            table-layout: auto; 
-            width: 100%; 
-        }
-        th, td {
-            text-align: center; 
-            white-space: nowrap; 
-            padding: 8px; 
-        }
-        th {
-            white-space: nowrap; 
-            font-weight: bold; 
-        }
-        td {
-            white-space: normal; 
-        }
-    </style>
-  
 </head>
 <body>
     <div class="container">
          <h1 class="text-center mb-5 mt-4">Survey Responses</h1>
 
         <div class="table-container">
-            <table class="table mt-3">
+            <table class="table mt-3" id="surveyTable">
                 <thead class="thead-dark">
                     <tr>
                         {% for name in column_names %}
@@ -66,7 +48,50 @@ html_template = """
                 </tbody>
             </table>
         </div>
+        <div class="pagination">
+            <button id="prevBtn" onclick="prevPage()" disabled>Previous</button>
+            <button id="nextBtn" onclick="nextPage()">Next</button>
+        </div>
     </div>
+
+    <script>
+        const rowsPerPage = 4;
+        let currentPage = 1;
+        const table = document.getElementById("surveyTable");
+        const totalRows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
+        const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+        function showPage(page) {
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+
+            for (let i = 0; i < totalRows; i++) {
+                rows[i].style.display = (i >= start && i < end) ? '' : 'none';
+            }
+
+            document.getElementById("prevBtn").disabled = page === 1;
+            document.getElementById("nextBtn").disabled = page === totalPages;
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                showPage(currentPage);
+            }
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                showPage(currentPage);
+            }
+        }
+
+        // Initialize the first page
+        showPage(currentPage);
+    </script>
+
 </body>
 </html>
 """
