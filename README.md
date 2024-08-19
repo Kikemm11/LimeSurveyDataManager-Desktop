@@ -1,5 +1,5 @@
 # LimeSurvey Data Manager
-![Project Screenshot](assets/limesurvey_data_manager_logo.svg)
+![Project Screenshot](assets/limesurvey_data_manager_logo.png)
 
 ## Table of Contents
 - [Introduction](#introduction)
@@ -7,7 +7,6 @@
 - [Installation](#installation)
 - [Usage](#usage)
 - [Technologies Used](#technologies-used)
-- [Project Structure](#project-structure)
 - [Contact](#contact)
 
 ## Introduction
@@ -56,22 +55,6 @@ This project is a tiny and simple desktop-application which helps to manage the 
 - **Frontend**: HTML, CSS, JavaScript
 - **Charts**: Chart.js
 - **Version Control**: Git
-
-## Project Structure
-
-LimeSurveyDatamanager-Desktop
-├── assets
-│ ├── images
-├── views
-│ ├── template.html
-├── windows
-│ ├── StartWindow.py
-│ ├── ProcessWindow.py
-│ ├── EndWindow.py
-├── app.py
-├── settings.py
-├── requirements.txt
-└── README.md
 
 ## Contact
 
