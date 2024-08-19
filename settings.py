@@ -1,4 +1,4 @@
-import json
+import os
 
 import pandas as pd
 from tkinter import messagebox
@@ -28,19 +28,6 @@ def mix_columns(df, prefix, new_column):
         return df
     
     
-def get_values(value, survey_dict, id):
- 
-        if  not isinstance(value, pd.Series):
-            value = str(survey_dict.get(id).get('A').get(value)) if survey_dict.get(id).get('A').get(value) else value
-
-            if isinstance(value, str) and value.startswith('[ {'):
-                value = json.loads(value)[0]["name"]
-
-            return value
-        else:
-            return
-        
-
 def manage_duplicates(column_names_set, column_name):
         
         if column_name in column_names_set:
@@ -55,8 +42,8 @@ def manage_duplicates(column_names_set, column_name):
 
 
 def manage_multimedia_names(column_name):
-        column_name = 'Foto' if 'Foto' in column_name else column_name
-        column_name = 'Ubicación' if 'ubicación' in column_name else column_name
+        column_name = 'Foto' if 'CameraIMG' in column_name else column_name
+        column_name = 'Ubicación' if 'LocationIMG' in column_name else column_name
         return column_name
 
 
@@ -67,3 +54,8 @@ def show_error_message(message):
         )
         
 
+# Get the absolute paths to the files bellow based on the executable location
+        
+image_path = os.path.abspath('assets/limesurvey_data_manager_logo.svg')
+stylesheet_path = os.path.abspath('views/stylesheet.css')
+scripts_path = os.path.abspath('views/scripts.js')
