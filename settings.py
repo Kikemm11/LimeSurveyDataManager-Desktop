@@ -52,10 +52,3 @@ def show_error_message(message):
             title="Error",
             message=message
         )
-        
-
-# Get the absolute paths to the files bellow based on the executable location
-        
-image_path = os.path.abspath('assets/limesurvey_data_manager_logo.svg')
-stylesheet_path = os.path.abspath('views/stylesheet.css')
-scripts_path = os.path.abspath('views/scripts.js')

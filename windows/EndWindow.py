@@ -10,11 +10,11 @@ import os
 import tkinter as tk
 from tkinter import filedialog
 
-from jinja2 import Environment, FileSystemLoader
-
-from pathlib import Path
+from jinja2 import Template, Environment, FileSystemLoader
 
 import settings
+
+from views import output_html
 
 
 class EndWindow(tk.Tk):
@@ -114,20 +114,21 @@ class EndWindow(tk.Tk):
             self.get_piechart_data()
         
         data = {
-                'css_path': settings.stylesheet_path,
-                'js_path': settings.scripts_path,
                 'output_df': self.output_df,
                 'column_names': self.output_df.columns,
                 'df_lenght': len(self.output_df),
                 'img_dict': self.img_dict,
-                'img_path': settings.image_path, 
+                'img_path': self.get_image_path('limesurvey_data_manager_logo.svg'), 
                 'piechart_data': self.pie_chart_data,
                 'piechart_options': [key for key in self.pie_chart_data],
                 'piechart_len': len([key for key in self.pie_chart_data]),
                 }   
         
-        env = Environment(loader=FileSystemLoader('views'))
-        template = env.get_template('template.html')
+        #env = Environment(loader=FileSystemLoader('views'))
+        #template = env.get_template('template.html')
+        #html_content = template.render(data)
+
+        template = Template(output_html.template_html)
         html_content = template.render(data)
         
         with open(file_path, "w") as file:
