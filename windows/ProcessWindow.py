@@ -40,6 +40,7 @@ class ProcessWindow(tk.Tk):
         self.survey_id = _survey_id
         self.selected_directory = _selected_directory
         self.img_dict = {}
+        self.select_questions = set()
         self.DBResults_dataframes = []
         self.output_df = None
         self.file_counter = 0
@@ -135,7 +136,11 @@ class ProcessWindow(tk.Tk):
  
         if  not isinstance(value, pd.Series):
             
-            value = str(self.survey_dict.get(id).get('A').get(value)) if self.survey_dict.get(id).get('A').get(value) else value
+            if self.survey_dict.get(id).get('A').get(value):
+                value = str(self.survey_dict.get(id).get('A').get(value))
+                self.select_questions.add(str(self.survey_dict.get(id).get('Q')))
+            
+            #value = str(self.survey_dict.get(id).get('A').get(value)) if self.survey_dict.get(id).get('A').get(value) else value
 
             if isinstance(value, str) and value.startswith('[ {'):
                 value = json.loads(value)[0]["name"]

@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 from tkinter import messagebox
 
@@ -40,8 +42,8 @@ def manage_duplicates(column_names_set, column_name):
 
 
 def manage_multimedia_names(column_name):
-        column_name = 'Foto' if 'Foto' in column_name else column_name
-        column_name = 'Ubicación' if 'ubicación' in column_name else column_name
+        column_name = 'Foto' if 'CameraIMG' in column_name else column_name
+        column_name = 'Ubicación' if 'LocationIMG' in column_name else column_name
         return column_name
 
 
@@ -50,3 +52,10 @@ def show_error_message(message):
             title="Error",
             message=message
         )
+        
+
+# Get the absolute paths to the files bellow based on the executable location
+        
+image_path = os.path.abspath('assets/limesurvey_data_manager_logo.svg')
+stylesheet_path = os.path.abspath('views/stylesheet.css')
+scripts_path = os.path.abspath('views/scripts.js')
