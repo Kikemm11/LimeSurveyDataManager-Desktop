@@ -1,3 +1,4 @@
+template_html = """
 <!DOCTYPE html>
 <html>
 <head>
@@ -338,3 +339,4 @@
     </script>
 </body>
 </html>
+"""
