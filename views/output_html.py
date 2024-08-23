@@ -8,6 +8,7 @@ template_html = """
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+
     <style>
 
         /*Main body style*/
@@ -333,10 +334,23 @@ template_html = """
                     plugins: {
                         legend: {
                             display: chartType == 'pie'
+                        },
+                    },
+                    scales: chartType === 'bar' ? {
+                        y: {
+                            ticks: {
+                                callback: function(value) {
+                                    if (Number.isInteger(value)) {
+                                        return value;
+                                    }
+                                },
+                                stepSize: 1,
+                            },
+                            beginAtZero: true
                         }
-                    }
-                    }
+                    } : {}
                 }
+            }
             );
 
         }
