@@ -163,7 +163,7 @@ template_html = """
         .charts-container {
             display: flex;
             flex-wrap: wrap; 
-            gap: 20px; 
+            gap: 40px; 
         }
         .charts {
             font-family: 'Poppins', sans-serif;
@@ -301,6 +301,7 @@ template_html = """
         var data = {{piechart_data}}
         let columns = [];
         let pieChartArray = [];
+        let myPieChart;
     
         for (let key in data) {
             columns.push(key);
@@ -311,30 +312,33 @@ template_html = """
             var col_name = columns[i];  
             var answers = data[col_name];
 
-            var data1 = {
-                labels: Object.entries(answers).map(([key, value]) => key),
-                datasets: [{
-                  data: Object.entries(answers).map(([key, value]) => value), 
-                  backgroundColor: ['#F2AA33', '#1898D0 ', '#F5ED41', '#0A447D', '#7D0A55', '#E64646', '#69B05D', '#5DB0AB', '#AA5DB0'] 
-                }]
-              };
-
-            var options = {
-              responsive: true,
-              maintainAspectRatio: false, 
-            };
-
             var elementId = 'pie-chart' + i;
 
             var ctx1 = document.getElementById(elementId).getContext('2d');
 
-            var PieChart = new Chart(ctx1, {
-                type: 'pie',
-                data: data1,
-                options: options
-              });
-              
-            pieChartArray.push(PieChart)
+            var chartType = Object.keys(answers).length < 5 ? 'pie' :  'bar';
+
+            myPieChart = new Chart(ctx1, {
+                type: chartType,
+                data: {
+                    datasets: [{
+                        data: Object.entries(answers).map(([key, value]) => value),
+                        backgroundColor: ['#F2AA33', '#1898D0 ', '#F5ED41', '#0A447D', '#7D0A55', '#E64646', '#69B05D', '#5DB0AB', '#AA5DB0']
+                    }],
+                    labels: Object.entries(answers).map(([key, value]) => key)
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: chartType == 'pie'
+                        }
+                    }
+                    }
+                }
+            );
+
         }
     </script>
 </body>
