@@ -79,12 +79,14 @@ class EndWindow(tk.Tk):
         file_path = filedialog.asksaveasfilename(title="Save File", defaultextension=".csv", filetypes=[(".csv Files", "*.csv")])
         if file_path:
             self.output_df.to_csv(file_path,index=False)
+            settings.info_message("CSV file successfully saved!")
             
     def _save_html_file(self):
         file_path = filedialog.asksaveasfilename(title="Save File", defaultextension=".html", filetypes=[(".html Files", "*.html")])
         
         if file_path:
             self.generate_html(file_path)
+            settings.info_message("HTML file successfully saved!")
             
                
     def get_image_path(self, img_name):
