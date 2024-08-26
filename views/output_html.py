@@ -8,6 +8,7 @@ template_html = """
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+
     <style>
 
         /*Main body style*/
@@ -103,6 +104,16 @@ template_html = """
             background-color: #c6faad;
             color: black; 
         }
+        #recordsDisplay {
+            display: flex;
+            justify-content: flex-start; 
+            margin-top: 12px; 
+            padding: 0;
+            font-family: 'Poppins', sans-serif; 
+            color: #79C557; 
+            font-weight: 600; 
+            font-size: 1.5rem; 
+        }
         .pagination {
             display: flex;
             justify-content: center; 
@@ -163,7 +174,7 @@ template_html = """
         .charts-container {
             display: flex;
             flex-wrap: wrap; 
-            gap: 20px; 
+            gap: 40px; 
         }
         .charts {
             font-family: 'Poppins', sans-serif;
@@ -220,6 +231,7 @@ template_html = """
                 </tbody>
             </table>
         </div>
+        <div id="recordsDisplay" class="records"></div>
         <div class="pagination">
             <button id="prevBtn" onclick="prevPage()" disabled>Previous</button>
             <button id="nextBtn" onclick="nextPage()">Next</button>
@@ -258,6 +270,8 @@ template_html = """
                 rows[i].style.display = (i >= start && i < end) ? '' : 'none';
             }
 
+            document.getElementById("recordsDisplay").textContent = `${start + 1} - ${end} of ${totalRows} responses`;
+
             document.getElementById("prevBtn").disabled = page === 1;
             document.getElementById("nextBtn").disabled = page === totalPages;
         }
@@ -291,16 +305,18 @@ template_html = """
                 button.textContent = "Survey Responses";
             } else {
                 button.textContent = "Statistics";
+                showPage(currentPage);
             }
         }
 
-        showPage(currentPage);
+        
     </script>
     <script>
 
         var data = {{piechart_data}}
         let columns = [];
         let pieChartArray = [];
+        let myPieChart;
     
         for (let key in data) {
             columns.push(key);
@@ -311,30 +327,46 @@ template_html = """
             var col_name = columns[i];  
             var answers = data[col_name];
 
-            var data1 = {
-                labels: Object.entries(answers).map(([key, value]) => key),
-                datasets: [{
-                  data: Object.entries(answers).map(([key, value]) => value), 
-                  backgroundColor: ['#F2AA33', '#1898D0 ', '#F5ED41', '#0A447D', '#7D0A55', '#E64646', '#69B05D', '#5DB0AB', '#AA5DB0'] 
-                }]
-              };
-
-            var options = {
-              responsive: true,
-              maintainAspectRatio: false, 
-            };
-
             var elementId = 'pie-chart' + i;
 
             var ctx1 = document.getElementById(elementId).getContext('2d');
 
-            var PieChart = new Chart(ctx1, {
-                type: 'pie',
-                data: data1,
-                options: options
-              });
-              
-            pieChartArray.push(PieChart)
+            var chartType = Object.keys(answers).length < 5 ? 'pie' :  'bar';
+
+            myPieChart = new Chart(ctx1, {
+                type: chartType,
+                data: {
+                    datasets: [{
+                        data: Object.entries(answers).map(([key, value]) => value),
+                        backgroundColor: ['#F2AA33', '#1898D0 ', '#F5ED41', '#0A447D', '#7D0A55', '#E64646', '#69B05D', '#5DB0AB', '#AA5DB0']
+                    }],
+                    labels: Object.entries(answers).map(([key, value]) => key)
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: chartType == 'pie'
+                        },
+                    },
+                    scales: chartType === 'bar' ? {
+                        y: {
+                            ticks: {
+                                callback: function(value) {
+                                    if (Number.isInteger(value)) {
+                                        return value;
+                                    }
+                                },
+                                stepSize: 1,
+                            },
+                            beginAtZero: true
+                        }
+                    } : {}
+                }
+            }
+            );
+
         }
     </script>
 </body>

@@ -79,12 +79,14 @@ class EndWindow(tk.Tk):
         file_path = filedialog.asksaveasfilename(title="Save File", defaultextension=".csv", filetypes=[(".csv Files", "*.csv")])
         if file_path:
             self.output_df.to_csv(file_path,index=False)
+            settings.info_message("CSV file successfully saved!")
             
     def _save_html_file(self):
         file_path = filedialog.asksaveasfilename(title="Save File", defaultextension=".html", filetypes=[(".html Files", "*.html")])
         
         if file_path:
             self.generate_html(file_path)
+            settings.info_message("HTML file successfully saved!")
             
                
     def get_image_path(self, img_name):
@@ -147,15 +149,15 @@ class EndWindow(tk.Tk):
         # Set up the window
         
         pop_up = tk.Toplevel(self)
-        pop_up.title("Select one or more options to make piechart")
+        pop_up.title("Select one or more options to generate charts")
         pop_up.configure(bg=settings.BACKGROUND_COLOR)
         pop_up.resizable(False, False)
         
         # Set up the scroll bar
         
-        canvas = tk.Canvas(pop_up, bg=settings.BACKGROUND_COLOR, borderwidth=0)
-        scrollbar = tk.Scrollbar(pop_up, orient="vertical", command=canvas.yview)
-        scrollable_frame = tk.Frame(canvas, bg=settings.BACKGROUND_COLOR)
+        canvas = tk.Canvas(pop_up, bg=settings.BACKGROUND_COLOR, borderwidth=0, highlightbackground=settings.BACKGROUND_COLOR, highlightthickness=2)
+        scrollbar = tk.Scrollbar(pop_up, orient="vertical", command=canvas.yview, highlightbackground=settings.BACKGROUND_COLOR, highlightthickness=2)
+        scrollable_frame = tk.Frame(canvas, bg=settings.BACKGROUND_COLOR, highlightbackground=settings.BACKGROUND_COLOR, highlightthickness=2)
         
         scrollable_frame.bind(
         "<Configure>",
@@ -172,7 +174,7 @@ class EndWindow(tk.Tk):
         options = {option: tk.BooleanVar() for option in self.select_questions}
         
         for idx, (option, var) in enumerate(options.items()):
-            chk = tk.Checkbutton(scrollable_frame, text=option, variable=var, background=settings.BACKGROUND_COLOR)
+            chk = tk.Checkbutton(scrollable_frame, text=option, variable=var, background=settings.BACKGROUND_COLOR, highlightbackground=settings.BACKGROUND_COLOR, highlightthickness=2)
             chk.grid(row=idx, column=0, sticky='w', padx=5, pady=2)
             
         canvas.pack(side="left", fill="both", expand=True)

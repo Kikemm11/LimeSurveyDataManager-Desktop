@@ -52,3 +52,10 @@ def show_error_message(message):
             title="Error",
             message=message
         )
+
+
+def info_message(message):
+    messagebox.showinfo(
+          title="Success",
+          message=message
+        )
